@@ -1,0 +1,1 @@
+val kotlinVrs by extra("1.2.61")

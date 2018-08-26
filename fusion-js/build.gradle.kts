@@ -4,9 +4,10 @@ val kotlinVrs: String by extra
 
 plugins {
     id("kotlin2js") version "1.2.60"
+    id("maven")
 }
 
-group = "org.jamdan2.Kotlin-JS-Playground"
+group = "com.github.Jamdan2"
 version = "1.0-SNAPSHOT"
 
 repositories {

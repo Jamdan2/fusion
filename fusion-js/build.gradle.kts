@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.Jamdan2"
-version = "1.0-SNAPSHOT"
+version = "master-SNAPSHOT"
 
 repositories {
     jcenter()

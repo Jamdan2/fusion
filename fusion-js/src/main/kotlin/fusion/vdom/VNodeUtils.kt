@@ -14,3 +14,18 @@ fun <T> Array<out VNode>.mapExpandFragments(action: (VNode) -> T): Array<out T> 
     }
     return result.toTypedArray()
 }
+
+val VElement.childrenExpandFragments: Array<out VNode> get() {
+    return children.mapExpandFragments { it }
+}
+
+val VFragment.childrenExpandFragments: Array<out VNode> get() {
+    return children.mapExpandFragments { it }
+}
+
+fun compareVNodes(lastVNode: VNode, nextVNode: VNode): Boolean {
+    return (
+            (lastVNode as? VText)?.value == (nextVNode as? VText)?.value
+            && (lastVNode as? VElement)?.type == (nextVNode as? VElement)?.type
+    )
+}

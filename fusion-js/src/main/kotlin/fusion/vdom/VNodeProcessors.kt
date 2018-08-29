@@ -4,6 +4,8 @@ import org.w3c.dom.DocumentFragment
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.Text
+import org.w3c.dom.events.Event
+import org.w3c.dom.events.EventListener
 import kotlin.browser.document
 
 fun processVNode(vNode: VNode): Node = when (vNode) {
@@ -62,6 +64,6 @@ fun processVFragment(vFragment: VFragment): DocumentFragment = document.createDo
 
 fun processVFragmentExpandFragments(vFragment: VFragment): DocumentFragment = document.createDocumentFragment().apply {
     vFragment.children.forEachExpandFragments {
-        appendChild(processVNode(it))
+        appendChild(processVNodeExpandFragments(it))
     }
 }

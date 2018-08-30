@@ -1,6 +1,5 @@
 package fusion.vdom
 
-import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.get
 
@@ -9,17 +8,27 @@ fun diffVNodes(rootNode: Node, lastVNode: VNode?, nextVNode: VNode?, index: Int 
         when {
             lastVNode is VFragment && nextVNode !is VFragment -> {
                 var delta = 0
-                lastVNode.children.forEachIndexed { i, vNode ->
-                    if (i == 0) diffVNodes(rootNode, vNode, nextVNode, i)
-                    else delta += diffVNodes(rootNode, vNode, null, i)
+                var i = 0
+                lastVNode.children.forEachExpandFragments { vNode ->
+                    delta += if (i == 0) {
+                        diffVNodes(rootNode, vNode, nextVNode, i)
+                    } else {
+                        diffVNodes(rootNode, vNode, null, i)
+                    }
+                    i++
                 }
                 return delta
             }
             lastVNode !is VFragment && nextVNode is VFragment -> {
                 var delta = 0
-                nextVNode.children.forEachIndexed { i, vNode ->
-                    if (i == 0) diffVNodes(rootNode, vNode, lastVNode, i)
-                    else delta += diffVNodes(rootNode, null, vNode, i)
+                var i = 0
+                nextVNode.children.forEachExpandFragments { vNode ->
+                    delta += if (i == 0) {
+                        diffVNodes(rootNode, lastVNode, vNode, i)
+                    } else {
+                        diffVNodes(rootNode, null, vNode, i)
+                    }
+                    i++
                 }
                 return delta
             }
@@ -58,22 +67,20 @@ fun diffVNodes(rootNode: Node, lastVNode: VNode?, nextVNode: VNode?, index: Int 
 }
 
 fun diffVElements(rootNode: Node, lastVNode: VElement, nextVNode: VElement, index: Int): Int {
-    val lastChildren = lastVNode.childrenExpandFragments
-    val nextChildren = nextVNode.childrenExpandFragments
-    val lastSize = lastChildren.size
-    val nextSize = nextChildren.size
+    val lastSize: Int = lastVNode.children.size
+    val nextSize: Int = nextVNode.children.size
     var i = 0
     var delta = 0
     while (i < lastSize || i < nextSize) {
         delta += diffVNodes(
                 rootNode.childNodes[index]!!,
                 try {
-                    lastChildren[i]
+                    lastVNode.children[i]
                 } catch (e: IndexOutOfBoundsException) {
                     null
                 },
                 try {
-                    nextChildren[i]
+                    nextVNode.children[i]
                 } catch (e: IndexOutOfBoundsException) {
                     null
                 },
@@ -81,40 +88,24 @@ fun diffVElements(rootNode: Node, lastVNode: VElement, nextVNode: VElement, inde
         )
         i++
     }
-    with(rootNode.childNodes[index]!!) {
-        if (this is Element) {
-            (lastVNode.attributes + nextVNode.attributes).filter {
-                nextVNode.attributes[it.key] != null
-            }.forEach {
-                setAttribute(it.key, it.value)
-            }
-            (lastVNode.listeners + nextVNode.listeners).filter {
-                nextVNode.attributes[it.key] != null
-            }.forEach {
-                addEventListener(it.key, it.value)
-            }
-        }
-    }
     return delta
 }
 
 fun diffVFragments(rootNode: Node, lastVNode: VFragment, nextVNode: VFragment): Int {
-    val lastChildren = lastVNode.childrenExpandFragments
-    val nextChildren = nextVNode.childrenExpandFragments
-    val lastSize = lastChildren.size
-    val nextSize = nextChildren.size
+    val lastSize: Int = lastVNode.children.size
+    val nextSize: Int = nextVNode.children.size
     var i = 0
     var delta = 0
     while (i < lastSize || i < nextSize) {
         delta += diffVNodes(
                 rootNode,
                 try {
-                    lastChildren[i]
+                    lastVNode.children[i]
                 } catch (e: IndexOutOfBoundsException) {
                     null
                 },
                 try {
-                    nextChildren[i]
+                    nextVNode.children[i]
                 } catch (e: IndexOutOfBoundsException) {
                     null
                 },

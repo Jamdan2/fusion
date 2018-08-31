@@ -8,15 +8,19 @@ import fusion.vdom.t
 import org.w3c.dom.events.Event
 
 abstract class DomComponent(val type: String) : ComponentBase(), Ktx {
-    private val children: ArrayList<VNode> = arrayListOf()
-
-    override fun render(): VNode = e(type, *children.toTypedArray())
+    private val children: MutableList<ComponentBase> = arrayListOf()
 
     override fun String.unaryPlus() {
-        children += t(this)
+        children += Text(this)
     }
 
     override fun ComponentBase.unaryPlus() {
-        children += render()
+        children += this
     }
+
+    override fun VNode.unaryPlus() {
+        children += Unknown(this)
+    }
+
+    override fun render(): VNode = e(type, *children.map { it.render() }.toTypedArray())
 }

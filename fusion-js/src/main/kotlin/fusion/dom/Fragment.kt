@@ -9,8 +9,6 @@ import fusion.vdom.t
 class Fragment : ComponentBase(), Ktx {
     val children: ArrayList<VNode> = arrayListOf()
 
-    override fun render(): VNode = f(*children.toTypedArray())
-
     override fun String.unaryPlus() {
         children += t(this)
     }
@@ -18,4 +16,10 @@ class Fragment : ComponentBase(), Ktx {
     override fun ComponentBase.unaryPlus() {
         children += render()
     }
+
+    override fun VNode.unaryPlus() {
+        children += this
+    }
+
+    override fun render(): VNode = f(*children.toTypedArray())
 }

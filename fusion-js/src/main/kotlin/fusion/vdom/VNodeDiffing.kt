@@ -84,7 +84,7 @@ fun diffVElements(rootNode: Node, lastVNode: VElement, nextVNode: VElement, inde
                 } catch (e: IndexOutOfBoundsException) {
                     null
                 },
-                i + delta
+                index = i + delta
         )
         i++
     }
@@ -109,7 +109,7 @@ fun diffVFragments(rootNode: Node, lastVNode: VFragment, nextVNode: VFragment): 
                 } catch (e: IndexOutOfBoundsException) {
                     null
                 },
-                i + delta
+                index = i + delta
         )
         i++
     }

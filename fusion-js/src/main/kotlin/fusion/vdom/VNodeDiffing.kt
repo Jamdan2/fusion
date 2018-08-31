@@ -1,5 +1,6 @@
 package fusion.vdom
 
+import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.get
 
@@ -87,6 +88,20 @@ fun diffVElements(rootNode: Node, lastVNode: VElement, nextVNode: VElement, inde
                 index = i + delta
         )
         i++
+    }
+    (lastVNode.attributes + nextVNode.attributes).forEach {
+        if (nextVNode.attributes[it.key] != null) {
+            if (nextVNode.attributes[it.key] != lastVNode.attributes[it.key]) {
+                (rootNode.childNodes[index]!! as Element).setAttribute(it.key, it.value)
+            }
+        }
+    }
+    (lastVNode.listeners + nextVNode.listeners).forEach {
+        if (nextVNode.listeners[it.key] != null) {
+            if (nextVNode.listeners[it.key] != lastVNode.listeners[it.key]) {
+                rootNode.childNodes[index]!!.addEventListener(it.key, it.value)
+            }
+        }
     }
     return delta
 }
